@@ -1,0 +1,24 @@
+package com.railway.payments.entity;
+
+import com.railway.identity.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "wallets")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class Wallet {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    private User user;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal balance;
+}
