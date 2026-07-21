@@ -8,6 +8,7 @@ com\railway\payments\controller\WalletController.class
 com\railway\chatbot\service\IntentDetector.class
 com\railway\food\repository\FoodItemRepository.class
 com\railway\identity\repository\UserRepository.class
+com\railway\ticketing\entity\RunningFrequency.class
 com\railway\tracking\entity\TrainPosition.class
 com\railway\identity\security\JwtUtil.class
 com\railway\payments\entity\Wallet$WalletBuilder.class
@@ -60,6 +61,7 @@ com\railway\payments\service\WalletService.class
 com\railway\ticketing\entity\Train.class
 com\railway\identity\service\AuthService.class
 com\railway\identity\entity\User$UserBuilder.class
+com\railway\config\AdditionalTrainSeeder.class
 com\railway\ticketing\entity\Booking$BookingBuilder.class
 com\railway\food\entity\FoodOrder$FoodOrderBuilder.class
 com\railway\ticketing\repository\BookingRepository.class

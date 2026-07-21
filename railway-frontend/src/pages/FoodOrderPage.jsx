@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
-import { getFoodMenu, placeFoodOrder, getMyBookings } from '../api';
+import { getFoodMenu, placeFoodOrder, getMyBookings, getWallet } from '../api';
 import toast from 'react-hot-toast';
 
 export default function FoodOrderPage() {
@@ -11,14 +11,16 @@ export default function FoodOrderPage() {
   const [menu, setMenu] = useState([]);
   const [cart, setCart] = useState({});
   const [loading, setLoading] = useState(true);
+  const [walletBalance, setWalletBalance] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(state?.bookingId || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    Promise.all([getFoodMenu(), getMyBookings()])
-      .then(([mRes, bRes]) => {
+    Promise.all([getFoodMenu(), getMyBookings(), getWallet()])
+      .then(([mRes, bRes, wRes]) => {
         setMenu(mRes.data);
+        setWalletBalance(wRes.data.balance);
         const activeBookings = bRes.data.filter(b => b.status === 'CONFIRMED');
         setBookings(activeBookings);
         if (!selectedBooking && activeBookings.length > 0) {
@@ -70,6 +72,7 @@ export default function FoodOrderPage() {
         total: cartTotal
       });
       toast.success('Food order placed! Rs.' + cartTotal + ' deducted from wallet');
+      setWalletBalance(prev => prev - cartTotal);
       setCart({});
     } catch {
       toast.error('Order failed. Check your wallet balance.');
@@ -129,9 +132,14 @@ export default function FoodOrderPage() {
           </div>
 
           {cartCount > 0 && (
-            <div className="cart-badge" onClick={handleOrder}>
-              <ShoppingCart size={18} />
-              {isSubmitting ? 'Ordering...' : `Place Order (₹${cartTotal})`}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="cart-badge" onClick={handleOrder} style={{ marginBottom: '8px' }}>
+                <ShoppingCart size={18} />
+                {isSubmitting ? 'Ordering...' : `Place Order (₹${cartTotal})`}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                Wallet Balance: <strong>₹{walletBalance !== null ? walletBalance.toFixed(2) : '...'}</strong>
+              </div>
             </div>
           )}
         </>

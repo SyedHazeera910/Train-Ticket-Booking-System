@@ -14,6 +14,7 @@ import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import PnrStatusPage from './pages/PnrStatusPage';
 import WalletPage from './pages/WalletPage';
+import TransactionsPage from './pages/TransactionsPage';
 import TrackingPage from './pages/TrackingPage';
 import FoodOrderPage from './pages/FoodOrderPage';
 import SupportPage from './pages/SupportPage';
@@ -41,6 +42,7 @@ function App() {
               <Route path="/bookings" element={<MyBookingsPage />} />
               <Route path="/pnr" element={<PnrStatusPage />} />
               <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/tracking" element={<TrackingPage />} />
               <Route path="/food" element={<FoodOrderPage />} />
               <Route path="/support" element={<SupportPage />} />

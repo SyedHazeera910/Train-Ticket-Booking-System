@@ -6,17 +6,22 @@ import com.railway.payments.entity.Wallet;
 import com.railway.payments.repository.WalletRepository;
 import com.railway.ticketing.dto.*;
 import com.railway.ticketing.entity.Booking;
+import com.railway.ticketing.entity.RunningFrequency;
 import com.railway.ticketing.entity.Train;
 import com.railway.ticketing.repository.BookingRepository;
 import com.railway.ticketing.repository.TrainRepository;
+import com.railway.payments.entity.Transaction;
+import com.railway.payments.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,6 +34,7 @@ public class BookingService {
     private final TrainRepository trainRepository;
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public synchronized BookingResponse createBooking(BookingRequest request, String userEmail) {
@@ -60,6 +66,9 @@ public class BookingService {
         train.setAvailableSeats(train.getAvailableSeats() - request.getNumberOfSeats());
         trainRepository.save(train);
 
+        // Determine travel date
+        LocalDate travelDate = (request.getTravelDate() != null) ? request.getTravelDate() : LocalDate.now();
+
         // Create booking
         Booking booking = Booking.builder()
                 .user(user)
@@ -70,9 +79,21 @@ public class BookingService {
                 .passengers(request.getPassengers())
                 .status(Booking.BookingStatus.CONFIRMED)
                 .fare(fare)
+                .travelDate(travelDate)
                 .build();
 
         booking = bookingRepository.save(booking);
+
+        // Record DEBIT transaction with PNR reference
+        Transaction txn = Transaction.builder()
+                .wallet(wallet)
+                .amount(fare)
+                .type(Transaction.TransactionType.DEBIT)
+                .description("Ticket booked · PNR: " + booking.getPnr() + " · Train " + train.getTrainNumber())
+                .bookingId(booking.getId())
+                .build();
+        transactionRepository.save(txn);
+
         return toResponse(booking);
     }
 
@@ -111,6 +132,16 @@ public class BookingService {
         wallet.setBalance(wallet.getBalance().add(refund));
         walletRepository.save(wallet);
 
+        // Record refund transaction
+        Transaction txn = Transaction.builder()
+                .wallet(wallet)
+                .amount(refund)
+                .type(Transaction.TransactionType.CREDIT)
+                .description("Refund for cancelled Booking · PNR: " + booking.getPnr())
+                .bookingId(booking.getId())
+                .build();
+        transactionRepository.save(txn);
+
         // Restore seats
         Train train = booking.getTrain();
         train.setAvailableSeats(train.getAvailableSeats() + booking.getNumberOfSeats());
@@ -134,18 +165,24 @@ public class BookingService {
     }
 
     private BookingResponse toResponse(Booking b) {
-        return new BookingResponse(
+        BookingResponse res = new BookingResponse(
                 b.getId(), b.getPnr(), b.getTrain().getName(), b.getTrain().getTrainNumber(),
                 b.getTrain().getFromStation().getName(), b.getTrain().getToStation().getName(),
                 b.getTrain().getDepartureTime(), b.getTrain().getArrivalTime(),
                 b.getTravelClass(), b.getNumberOfSeats(), b.getPassengers(),
-                b.getStatus().name(), b.getFare(), b.getCreatedAt()
+                b.getStatus().name(), b.getFare(), b.getCreatedAt(), null
         );
+        res.setTravelDate(b.getTravelDate());
+        return res;
     }
 
     public List<Train> searchTrains(String from, String to, LocalDate date, int seats) {
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(LocalTime.MAX);
-        return trainRepository.searchTrains(from, to, start, end, seats);
+        DayOfWeek requestedDay = date.getDayOfWeek();
+        return trainRepository.findByRoute(from, to, seats)
+                .stream()
+                .filter(t -> t.getFrequency() == RunningFrequency.DAILY
+                        || (t.getRunningDays() != null && t.getRunningDays().contains(requestedDay)))
+                .sorted(Comparator.comparing(t -> t.getDepartureTime()))
+                .collect(Collectors.toList());
     }
 }

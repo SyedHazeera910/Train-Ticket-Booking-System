@@ -2,6 +2,7 @@ package com.railway.config;
 
 import com.railway.food.entity.FoodItem;
 import com.railway.food.repository.FoodItemRepository;
+import com.railway.ticketing.entity.RunningFrequency;
 import com.railway.ticketing.entity.Station;
 import com.railway.ticketing.entity.Train;
 import com.railway.ticketing.repository.StationRepository;
@@ -14,8 +15,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -77,7 +80,21 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(16).withMinute(25))
                 .arrivalTime(now.plusDays(2).withHour(8).withMinute(15))
                 .totalSeats(500).availableSeats(320).baseFare(BigDecimal.valueOf(850))
-                .latitude(28.6139).longitude(77.2090).build(),
+                .latitude(28.6139).longitude(77.2090)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
+
+            Train.builder()
+                .name("Mumbai Mail").trainNumber("12137").trainType("EXPRESS")
+                .fromStation(delhi).toStation(mumbai)
+                .departureTime(now.plusDays(1).withHour(22).withMinute(0))
+                .arrivalTime(now.plusDays(2).withHour(16).withMinute(30))
+                .totalSeats(400).availableSeats(210).baseFare(BigDecimal.valueOf(700))
+                .latitude(28.6139).longitude(77.2090)
+                .frequency(RunningFrequency.WEEKLY)
+                .runningDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY))
+                .build(),
 
             Train.builder()
                 .name("Shatabdi Express").trainNumber("12001").trainType("SHATABDI")
@@ -85,7 +102,21 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(6).withMinute(5))
                 .arrivalTime(now.plusDays(1).withHour(10).withMinute(40))
                 .totalSeats(300).availableSeats(185).baseFare(BigDecimal.valueOf(550))
-                .latitude(28.6139).longitude(77.2090).build(),
+                .latitude(28.6139).longitude(77.2090)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
+
+            Train.builder()
+                .name("Pink City Express").trainNumber("12413").trainType("EXPRESS")
+                .fromStation(delhi).toStation(jaipur)
+                .departureTime(now.plusDays(1).withHour(15).withMinute(30))
+                .arrivalTime(now.plusDays(1).withHour(20).withMinute(10))
+                .totalSeats(350).availableSeats(220).baseFare(BigDecimal.valueOf(480))
+                .latitude(28.6139).longitude(77.2090)
+                .frequency(RunningFrequency.WEEKLY)
+                .runningDays(Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY))
+                .build(),
 
             Train.builder()
                 .name("Duronto Express").trainNumber("12213").trainType("EXPRESS")
@@ -93,7 +124,10 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(23).withMinute(0))
                 .arrivalTime(now.plusDays(2).withHour(21).withMinute(30))
                 .totalSeats(450).availableSeats(210).baseFare(BigDecimal.valueOf(900))
-                .latitude(19.0760).longitude(72.8777).build(),
+                .latitude(19.0760).longitude(72.8777)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
 
             Train.builder()
                 .name("Coromandel Express").trainNumber("12841").trainType("EXPRESS")
@@ -101,7 +135,10 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(14).withMinute(20))
                 .arrivalTime(now.plusDays(2).withHour(22).withMinute(5))
                 .totalSeats(500).availableSeats(95).baseFare(BigDecimal.valueOf(780))
-                .latitude(22.5726).longitude(88.3639).build(),
+                .latitude(22.5726).longitude(88.3639)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
 
             Train.builder()
                 .name("Karnataka Express").trainNumber("12627").trainType("EXPRESS")
@@ -109,7 +146,10 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(22).withMinute(30))
                 .arrivalTime(now.plusDays(3).withHour(6).withMinute(45))
                 .totalSeats(600).availableSeats(430).baseFare(BigDecimal.valueOf(1100))
-                .latitude(28.6139).longitude(77.2090).build(),
+                .latitude(28.6139).longitude(77.2090)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
 
             Train.builder()
                 .name("Deccan Queen").trainNumber("12123").trainType("EXPRESS")
@@ -117,7 +157,10 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(1).withHour(7).withMinute(15))
                 .arrivalTime(now.plusDays(1).withHour(20).withMinute(40))
                 .totalSeats(350).availableSeats(270).baseFare(BigDecimal.valueOf(650))
-                .latitude(17.3850).longitude(78.4867).build(),
+                .latitude(17.3850).longitude(78.4867)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
 
             Train.builder()
                 .name("Gujarat Queen").trainNumber("12901").trainType("RAJDHANI")
@@ -125,15 +168,32 @@ public class DataSeeder implements CommandLineRunner {
                 .departureTime(now.plusDays(2).withHour(8).withMinute(0))
                 .arrivalTime(now.plusDays(2).withHour(21).withMinute(55))
                 .totalSeats(400).availableSeats(150).baseFare(BigDecimal.valueOf(720))
-                .latitude(23.0225).longitude(72.5714).build(),
+                .latitude(23.0225).longitude(72.5714)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
 
-                 Train.builder()
-                .name("Pinakini ").trainNumber("12933").trainType("SuperFast Express")
+            Train.builder()
+                .name("Pinakini Express").trainNumber("12933").trainType("SuperFast Express")
                 .fromStation(chennai).toStation(hyderabad)
                 .departureTime(now.plusDays(1).withHour(10).withMinute(0))
-                .arrivalTime(now.plusDays(1).withHour(20).withMinute(07))
+                .arrivalTime(now.plusDays(1).withHour(20).withMinute(7))
                 .totalSeats(350).availableSeats(150).baseFare(BigDecimal.valueOf(520))
-                .latitude(27.0225).longitude(65.5714).build()
+                .latitude(27.0225).longitude(65.5714)
+                .frequency(RunningFrequency.DAILY)
+                .runningDays(Set.of(DayOfWeek.values()))
+                .build(),
+
+            Train.builder()
+                .name("Deccan Weekly Express").trainNumber("17033").trainType("EXPRESS")
+                .fromStation(chennai).toStation(hyderabad)
+                .departureTime(now.plusDays(1).withHour(18).withMinute(30))
+                .arrivalTime(now.plusDays(2).withHour(8).withMinute(15))
+                .totalSeats(300).availableSeats(180).baseFare(BigDecimal.valueOf(480))
+                .latitude(13.0827).longitude(80.2707)
+                .frequency(RunningFrequency.WEEKLY)
+                .runningDays(Set.of(DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY))
+                .build()
         );
 
         List<Train> saved = trainRepository.saveAll(trains);

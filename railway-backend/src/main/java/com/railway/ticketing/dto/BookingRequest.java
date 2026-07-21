@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -23,4 +24,6 @@ public class BookingRequest {
     
     @NotEmpty(message = "Passenger details are required")
     private List<String> passengers; // "Name|Age|Gender"
+
+    private LocalDate travelDate; // The date user wants to travel
 }

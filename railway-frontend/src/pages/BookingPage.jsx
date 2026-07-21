@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Minus, User, Train } from 'lucide-react';
-import { createBooking } from '../api';
+import { createBooking, getWallet } from '../api';
 import toast from 'react-hot-toast';
 
 const CLASSES = [
@@ -15,9 +15,15 @@ export default function BookingPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const train = state?.train;
+  const travelDate = state?.travelDate || new Date().toISOString().slice(0, 10);
   const [travelClass, setTravelClass] = useState('SLEEPER');
   const [passengers, setPassengers] = useState([{ name: '', age: '', gender: 'MALE' }]);
   const [loading, setLoading] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(null);
+
+  React.useEffect(() => {
+    getWallet().then(res => setWalletBalance(res.data.balance)).catch(() => {});
+  }, []);
 
   if (!train) {
     navigate('/search');
@@ -51,6 +57,7 @@ export default function BookingPage() {
         travelClass,
         numberOfSeats: passengers.length,
         passengers: passengers.map((p) => `${p.name}|${p.age}|${p.gender}`),
+        travelDate: travelDate,
       });
       toast.success(`Booking confirmed! PNR: ${data.pnr}`);
       navigate('/bookings');
@@ -166,6 +173,10 @@ export default function BookingPage() {
             <div className="font-bold" style={{ marginBottom: '16px', fontSize: '1rem' }}>Fare Summary</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
               <div className="flex justify-between text-sm">
+                <span className="text-secondary">Travel Date</span>
+                <span className="font-bold">{new Date(travelDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+              <div className="flex justify-between text-sm">
                 <span className="text-secondary">Class</span>
                 <span>{classInfo.label}</span>
               </div>
@@ -184,7 +195,9 @@ export default function BookingPage() {
               </div>
             </div>
             <div style={{ padding: '10px', background: 'rgba(0,212,184,0.08)', borderRadius: '8px', border: '1px solid rgba(0,212,184,0.2)', fontSize: '0.75rem', color: 'var(--accent-teal)', marginBottom: '16px' }}>
-              💳 Amount will be deducted from your wallet
+              💳 Amount will be deducted from your wallet.
+              <br/>
+              <strong>Available Balance: ₹{walletBalance !== null ? walletBalance.toFixed(2) : '...'}</strong>
             </div>
             <button id="confirm-booking" className="btn btn-primary btn-lg btn-full" onClick={handleBook} disabled={loading}>
               {loading ? 'Confirming...' : `Confirm & Pay ₹${fare}`}

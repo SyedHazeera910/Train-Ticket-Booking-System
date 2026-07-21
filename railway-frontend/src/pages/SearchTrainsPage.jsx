@@ -46,7 +46,7 @@ export default function SearchTrainsPage() {
   };
 
   const handleBook = (train) => {
-    navigate('/book', { state: { train, seats: form.seats } });
+    navigate('/book', { state: { train, seats: form.seats, travelDate: form.date } });
   };
 
   return (
@@ -113,6 +113,17 @@ export default function SearchTrainsPage() {
                 <div>
                   <div className="train-name">{train.name}</div>
                   <div className="train-number">#{train.trainNumber} • {train.trainType}</div>
+                  <div style={{ marginTop: '4px' }}>
+                    {train.frequency === 'DAILY' ? (
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '20px', background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green)', fontWeight: 600 }}>
+                        🟢 Runs Daily
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '20px', background: 'rgba(251,168,0,0.15)', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                        📅 {train.runningDays?.slice(0, 3).map(d => d.substring(0,3)).join(', ')}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="train-route">

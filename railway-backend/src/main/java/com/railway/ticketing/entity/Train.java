@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "trains")
@@ -49,4 +51,14 @@ public class Train {
 
     private Double latitude;
     private Double longitude;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RunningFrequency frequency;
+
+    @ElementCollection
+    @CollectionTable(name = "train_running_days", joinColumns = @JoinColumn(name = "train_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "day_of_week")
+    private Set<DayOfWeek> runningDays;
 }

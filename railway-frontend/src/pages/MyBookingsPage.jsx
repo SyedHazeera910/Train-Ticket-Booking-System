@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { getMyBookings, cancelBooking } from '../api';
-import { Train, CalendarX2 } from 'lucide-react';
+import { getMyBookings, cancelBooking, getMyFoodOrders } from '../api';
+import { Train, CalendarX2, Utensils } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState([]);
+  const [foodOrders, setFoodOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchBookings = async () => {
+  const fetchData = async () => {
     try {
-      const { data } = await getMyBookings();
-      setBookings(data);
+      const [bRes, fRes] = await Promise.all([getMyBookings(), getMyFoodOrders()]);
+      setBookings(bRes.data);
+      setFoodOrders(fRes.data);
     } catch {
-      toast.error('Failed to load bookings');
+      toast.error('Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBookings();
+    fetchData();
   }, []);
 
   const handleCancel = async (id) => {
@@ -28,7 +30,7 @@ export default function MyBookingsPage() {
     try {
       await cancelBooking(id);
       toast.success('Booking cancelled successfully');
-      fetchBookings();
+      fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Cancellation failed');
     }
@@ -71,7 +73,12 @@ export default function MyBookingsPage() {
                 <div>
                   <div className="text-secondary mb-1">Journey</div>
                   <div className="font-bold">{b.fromStation} → {b.toStation}</div>
-                  <div className="text-muted mt-1">{new Date(b.departureTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                  <div className="text-muted mt-1">
+                    📅 {b.travelDate
+                      ? new Date(b.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                      : new Date(b.departureTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                    }
+                  </div>
                 </div>
                 <div>
                   <div className="text-secondary mb-1">Details</div>
@@ -85,6 +92,24 @@ export default function MyBookingsPage() {
                   ))}
                 </div>
               </div>
+
+              {foodOrders.filter(f => f.bookingId === b.id).length > 0 && (
+                <div className="mt-4 pt-3" style={{ borderTop: '1px dashed var(--border-color)' }}>
+                  <div className="text-secondary mb-2 flex items-center gap-2 font-semibold">
+                    <Utensils size={14} /> Food Ordered
+                  </div>
+                  {foodOrders.filter(f => f.bookingId === b.id).map(order => (
+                    <div key={order.id} className="text-sm">
+                      {JSON.parse(order.itemsJson).map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-muted mb-1">
+                          <span>{item.qty}x {item.name}</span>
+                          <span>₹{(item.price * item.qty).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {b.status === 'CONFIRMED' && (
                 <div className="flex gap-3 justify-end mt-4 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>

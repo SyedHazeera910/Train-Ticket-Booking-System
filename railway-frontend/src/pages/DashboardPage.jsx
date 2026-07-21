@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = () => {
     Promise.all([getMyBookings(), getWallet()])
       .then(([bRes, wRes]) => {
         setBookings(bRes.data);
@@ -18,12 +18,23 @@ export default function DashboardPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchData();
+
+    // Refetch when user returns to this tab (e.g. after booking)
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchData(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
 
   const confirmed = bookings.filter((b) => b.status === 'CONFIRMED').length;
-  const totalSpent = bookings
-    .filter((b) => b.status === 'CONFIRMED')
-    .reduce((sum, b) => sum + b.fare, 0);
+  const totalDebits = wallet?.transactions
+    ?.filter(t => t.type === 'DEBIT')
+    .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  
+  const totalSpent = totalDebits;
 
   const quickLinks = [
     { to: '/search', icon: Search, label: 'Search Trains', color: 'gold', desc: 'Find & book tickets' },

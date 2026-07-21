@@ -12,6 +12,7 @@ const navItems = [
   { path: '/bookings', icon: Ticket, label: 'My Bookings' },
   { path: '/pnr', icon: Train, label: 'PNR Status' },
   { path: '/wallet', icon: Wallet, label: 'Wallet' },
+  { path: '/transactions', icon: Wallet, label: 'Transactions' },
   { path: '/tracking', icon: MapPin, label: 'Live Tracking' },
   { path: '/food', icon: UtensilsCrossed, label: 'Food Order' },
   { path: '/support', icon: HeadphonesIcon, label: 'Support' },

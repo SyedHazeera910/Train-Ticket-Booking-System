@@ -30,6 +30,9 @@ public class Transaction {
     @Column(length = 300)
     private String description;
 
+    @Column
+    private Long bookingId; // optional reference back to the booking
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 

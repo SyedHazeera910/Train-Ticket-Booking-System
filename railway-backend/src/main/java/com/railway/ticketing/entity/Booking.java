@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -45,6 +46,9 @@ public class Booking {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal fare;
+
+    @Column
+    private LocalDate travelDate;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
