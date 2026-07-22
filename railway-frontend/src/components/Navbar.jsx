@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import ThemeToggle from './ThemeToggle';
 import {
   Train, Ticket, Wallet, MapPin, UtensilsCrossed,
   HeadphonesIcon, LogOut, User, LayoutDashboard, Search
@@ -49,11 +50,12 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-user">
+        <ThemeToggle />
         <div className="user-badge">
           <User size={16} />
           <span>{user?.name?.split(' ')[0] || 'User'}</span>
         </div>
-        <button className="logout-btn" onClick={handleLogout}>
+        <button className="logout-btn" onClick={handleLogout} title="Log out">
           <LogOut size={16} />
         </button>
       </div>

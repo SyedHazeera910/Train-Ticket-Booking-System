@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Train, Eye, EyeOff } from 'lucide-react';
 import { login } from '../api';
 import { useAuthStore } from '../store/authStore';
+import ThemeToggle from '../components/ThemeToggle';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
@@ -32,6 +33,9 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
+      <div className="auth-theme-toggle">
+        <ThemeToggle />
+      </div>
       <div className="auth-card">
         <div className="auth-logo">
           <div className="auth-logo-icon"><Train size={32} /></div>

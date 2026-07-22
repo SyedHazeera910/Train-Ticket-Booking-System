@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* ─── CSS Variables ──────────────────────────────────────────────────────── */
-:root {
+:root, [data-theme="dark"] {
   --bg-primary: #080c14;
   --bg-secondary: #0f1520;
   --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
   --border-color: rgba(255, 255, 255, 0.08);
   --border-glow: rgba(251, 168, 0, 0.3);
 
@@ -36,7 +36,49 @@
   --radius-full: 9999px;
 
   --navbar-height: 64px;
+  --navbar-bg: rgba(8, 12, 20, 0.9);
+  --auth-card-bg: rgba(15, 21, 32, 0.85);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --option-bg: #0f1520;
+  --map-bg: rgba(0, 20, 10, 0.8);
+  --modal-bg: #0f1520;
   --transition: all 0.2s ease;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --border-color: rgba(15, 23, 42, 0.12);
+  --border-glow: rgba(217, 119, 6, 0.4);
+
+  --accent-gold: #d97706;
+  --accent-teal: #0d9488;
+  --accent-blue: #2563eb;
+  --accent-red: #dc2626;
+  --accent-green: #16a34a;
+  --accent-purple: #9333ea;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --gradient-hero: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+  --gradient-gold: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-teal: linear-gradient(135deg, #0d9488, #0891b2);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+
+  --shadow-gold: 0 4px 20px rgba(217, 119, 6, 0.15);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(13, 148, 136, 0.15);
+
+  --navbar-bg: rgba(255, 255, 255, 0.92);
+  --auth-card-bg: rgba(255, 255, 255, 0.92);
+  --input-bg: #f1f5f9;
+  --option-bg: #ffffff;
+  --map-bg: #e2e8f0;
+  --modal-bg: #ffffff;
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────────────── */
@@ -51,6 +93,7 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body::before {
@@ -61,9 +104,51 @@ body::before {
               radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,212,184,0.04), transparent);
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+[data-theme="light"] body::before {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245,158,11,0.08), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(13,148,136,0.08), transparent);
 }
 
 #root { position: relative; z-index: 1; }
+
+/* ─── Theme Toggle Button ──────────────────────────────────────────────── */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  transform: scale(1.08);
+}
+.theme-icon {
+  transition: transform 0.3s ease;
+}
+.theme-toggle-btn:hover .theme-icon {
+  transform: rotate(20deg);
+}
+.sun-icon { color: #f59e0b; }
+.moon-icon { color: #6366f1; }
+
+/* Auth page floating theme switch */
+.auth-theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+}
 
 /* ─── Navbar ─────────────────────────────────────────────────────────────── */
 .navbar {
@@ -72,7 +157,7 @@ body::before {
   left: 0;
   right: 0;
   height: var(--navbar-height);
-  background: rgba(8, 12, 20, 0.9);
+  background: var(--navbar-bg);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -80,6 +165,7 @@ body::before {
   padding: 0 24px;
   gap: 8px;
   z-index: 1000;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .navbar-brand {
@@ -125,10 +211,10 @@ body::before {
   white-space: nowrap;
   transition: var(--transition);
 }
-.nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+.nav-link:hover { color: var(--text-primary); background: var(--bg-card-hover); }
 .nav-link.active {
   color: var(--accent-gold);
-  background: rgba(251, 168, 0, 0.1);
+  background: rgba(251, 168, 0, 0.12);
 }
 
 .navbar-user {
@@ -202,7 +288,7 @@ body::before {
   transition: var(--transition);
   box-shadow: var(--shadow-card);
 }
-.card:hover { border-color: rgba(255,255,255,0.12); }
+.card:hover { border-color: var(--border-glow); }
 .card.glow-gold { border-color: var(--border-glow); box-shadow: var(--shadow-gold); }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -234,11 +320,11 @@ body::before {
 }
 
 .btn-secondary {
-  background: rgba(255,255,255,0.06);
+  background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
-.btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+.btn-secondary:hover:not(:disabled) { background: var(--bg-card-hover); }
 
 .btn-danger {
   background: rgba(239, 68, 68, 0.1);
@@ -264,7 +350,7 @@ body::before {
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
 .form-input, .form-select {
-  background: rgba(255,255,255,0.05);
+  background: var(--input-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 10px 14px;
@@ -277,10 +363,10 @@ body::before {
 .form-input:focus, .form-select:focus {
   outline: none;
   border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(251, 168, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(251, 168, 0, 0.15);
 }
 .form-input::placeholder { color: var(--text-muted); }
-.form-select option { background: var(--bg-secondary); }
+.form-select option { background: var(--option-bg); color: var(--text-primary); }
 
 .form-grid { display: grid; gap: 16px; }
 .form-grid-2 { grid-template-columns: 1fr 1fr; }
@@ -310,12 +396,13 @@ body::before {
   justify-content: center;
   padding: 24px;
   background: var(--gradient-hero);
+  position: relative;
 }
 
 .auth-card {
   width: 100%;
   max-width: 440px;
-  background: rgba(15, 21, 32, 0.8);
+  background: var(--auth-card-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: 40px;
@@ -339,7 +426,7 @@ body::before {
   margin-bottom: 16px;
   color: var(--accent-gold);
 }
-.auth-title { font-size: 1.5rem; font-weight: 700; text-align: center; }
+.auth-title { font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--text-primary); }
 .auth-subtitle { color: var(--text-secondary); font-size: 0.875rem; text-align: center; margin-top: 6px; }
 .auth-form { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
 .auth-switch { text-align: center; margin-top: 20px; font-size: 0.875rem; color: var(--text-secondary); }
@@ -363,8 +450,9 @@ body::before {
   align-items: center;
   gap: 16px;
   transition: var(--transition);
+  box-shadow: var(--shadow-card);
 }
-.stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.12); }
+.stat-card:hover { transform: translateY(-2px); border-color: var(--border-glow); }
 .stat-icon {
   display: flex;
   align-items: center;
@@ -380,7 +468,7 @@ body::before {
 .stat-icon.green { background: rgba(34,197,94,0.1);   color: var(--accent-green); }
 .stat-icon.purple{ background: rgba(168,85,247,0.1);  color: var(--accent-purple); }
 .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
-.stat-value { font-size: 1.5rem; font-weight: 700; margin-top: 2px; }
+.stat-value { font-size: 1.5rem; font-weight: 700; margin-top: 2px; color: var(--text-primary); }
 
 /* ─── Train Cards ────────────────────────────────────────────────────────── */
 .train-card {
@@ -394,13 +482,14 @@ body::before {
   gap: 16px;
   transition: var(--transition);
   cursor: pointer;
+  box-shadow: var(--shadow-card);
 }
 .train-card:hover { border-color: var(--border-glow); box-shadow: var(--shadow-gold); transform: translateY(-1px); }
-.train-name { font-weight: 700; font-size: 1rem; }
+.train-name { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
 .train-number { font-size: 0.8rem; color: var(--accent-gold); font-weight: 600; margin-top: 2px; }
 .train-route { display: flex; align-items: center; gap: 12px; }
 .station-info { text-align: center; }
-.station-time { font-size: 1.1rem; font-weight: 700; }
+.station-time { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
 .station-name { font-size: 0.75rem; color: var(--text-secondary); }
 .route-line { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .route-dots { height: 1px; background: linear-gradient(to right, var(--accent-gold), var(--accent-teal)); width: 80px; position: relative; }
@@ -431,17 +520,18 @@ body::before {
   align-items: center;
   gap: 16px;
   transition: var(--transition);
+  box-shadow: var(--shadow-card);
 }
-.booking-card:hover { border-color: rgba(255,255,255,0.12); }
+.booking-card:hover { border-color: var(--border-glow); }
 .booking-pnr { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
 .booking-pnr span { color: var(--accent-gold); font-weight: 700; font-size: 0.85rem; }
-.booking-train { font-weight: 700; font-size: 1rem; }
+.booking-train { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
 .booking-meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
 .booking-fare { font-size: 1.1rem; font-weight: 700; color: var(--accent-gold); text-align: right; }
 
 /* ─── Wallet ─────────────────────────────────────────────────────────────── */
 .wallet-balance-card {
-  background: linear-gradient(135deg, rgba(251,168,0,0.15), rgba(0,212,184,0.08));
+  background: linear-gradient(135deg, rgba(251,168,0,0.12), rgba(0,212,184,0.06));
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-xl);
   padding: 32px;
@@ -464,13 +554,13 @@ body::before {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(255,255,255,0.03);
+  background: var(--bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
 }
 .txn-credit { color: var(--accent-green); font-weight: 600; }
 .txn-debit  { color: var(--accent-red);   font-weight: 600; }
-.txn-desc { font-size: 0.875rem; }
+.txn-desc { font-size: 0.875rem; color: var(--text-primary); }
 .txn-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
 /* ─── Tracking Map ───────────────────────────────────────────────────────── */
@@ -480,8 +570,8 @@ body::before {
   gap: 20px;
 }
 .map-container {
-  background: rgba(0,20,10,0.8);
-  border: 1px solid rgba(0,212,184,0.2);
+  background: var(--map-bg);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   height: 500px;
   position: relative;
@@ -494,8 +584,8 @@ body::before {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,184,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,184,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(0,212,184,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,184,0.08) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 .train-dot {
@@ -527,7 +617,7 @@ body::before {
 }
 .train-tracking-item:hover, .train-tracking-item.selected {
   border-color: var(--border-glow);
-  background: rgba(251,168,0,0.05);
+  background: rgba(251,168,0,0.08);
 }
 .speed-badge { font-size: 0.7rem; color: var(--accent-teal); }
 
@@ -543,9 +633,10 @@ body::before {
   border-radius: var(--radius-lg);
   padding: 20px;
   transition: var(--transition);
+  box-shadow: var(--shadow-card);
 }
-.food-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-1px); }
-.food-name { font-weight: 700; font-size: 0.95rem; }
+.food-card:hover { border-color: var(--border-glow); transform: translateY(-1px); }
+.food-name { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
 .food-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
 .food-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
 .food-price { font-size: 1rem; font-weight: 700; color: var(--accent-gold); }
@@ -570,9 +661,10 @@ body::before {
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   transition: var(--transition);
+  box-shadow: var(--shadow-card);
 }
-.ticket-item:hover { border-color: rgba(255,255,255,0.12); }
-.ticket-subject { font-weight: 600; font-size: 0.95rem; }
+.ticket-item:hover { border-color: var(--border-glow); }
+.ticket-subject { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
 .ticket-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
 .ticket-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
 
@@ -602,13 +694,13 @@ body::before {
 /* ─── Modal ──────────────────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
   z-index: 2000; padding: 24px;
 }
 .modal {
-  background: var(--bg-secondary);
+  background: var(--modal-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: 32px;
@@ -620,7 +712,7 @@ body::before {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-.modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; }
+.modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); }
 .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
 /* ─── PNR Page ───────────────────────────────────────────────────────────── */
@@ -640,7 +732,7 @@ body::before {
   margin-top: 20px;
 }
 .info-item label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.info-item p { font-weight: 600; margin-top: 2px; }
+.info-item p { font-weight: 600; margin-top: 2px; color: var(--text-primary); }
 
 /* ─── Category filter ────────────────────────────────────────────────────── */
 .category-filter {
@@ -653,7 +745,7 @@ body::before {
   padding: 6px 16px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-color);
-  background: transparent;
+  background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 0.8rem;
   font-weight: 500;
@@ -662,7 +754,7 @@ body::before {
   font-family: inherit;
 }
 .cat-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
-.cat-btn.active { background: rgba(251,168,0,0.1); border-color: var(--accent-gold); color: var(--accent-gold); }
+.cat-btn.active { background: rgba(251,168,0,0.12); border-color: var(--accent-gold); color: var(--accent-gold); }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
@@ -700,5 +792,273 @@ body::before {
 .text-green { color: var(--accent-green); }
 .text-red { color: var(--accent-red); }
 .font-bold { font-weight: 700; }
-.section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; }
+.section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
 .divider { height: 1px; background: var(--border-color); margin: 20px 0; }
+
+/* ─── Ticket Print Modal & Print Styles ─────────────────────────────────── */
+.ticket-modal-overlay {
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+
+.ticket-modal-container {
+  max-width: 680px;
+  width: 100%;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-glow);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.icon-only {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.ticket-card {
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 28px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.ticket-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ticket-brand h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.ticket-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.ticket-pnr-box {
+  text-align: right;
+  background: #f8fafc;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.pnr-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.08em;
+}
+
+.pnr-val {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #d97706;
+}
+
+.ticket-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin-top: 2px;
+}
+
+.ticket-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.ticket-info-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.info-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+.ticket-route-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #fef3c7, #fee2e2);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #fde68a;
+}
+
+.route-station {
+  display: flex;
+  flex-direction: column;
+}
+
+.route-station.right {
+  text-align: right;
+}
+
+.station-code {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.station-full {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #78350f;
+}
+
+.route-arrow {
+  font-size: 1.3rem;
+  color: #d97706;
+  font-weight: bold;
+}
+
+.ticket-table-container {
+  margin-bottom: 20px;
+}
+
+.table-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ticket-table th {
+  background: #f1f5f9;
+  color: #334155;
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 700;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.ticket-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.seat-badge {
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+.ticket-fare-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+
+.fare-detail span { color: #64748b; margin-right: 6px; }
+.fare-detail strong { color: #0f172a; }
+.total-amount { font-size: 1.15rem; font-weight: 800; color: #d97706; margin-left: 6px; }
+
+.ticket-footer-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e1;
+}
+
+/* ─── Media Print CSS Rules ─────────────────────────────────────────────── */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #ticket-print-area, #ticket-print-area * {
+    visibility: visible !important;
+  }
+  #ticket-print-area {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 24px !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    z-index: 99999 !important;
+  }
+  .no-print, .modal-overlay, .navbar, .chatbot-fab, .chatbot-panel {
+    display: none !important;
+  }
+}
+

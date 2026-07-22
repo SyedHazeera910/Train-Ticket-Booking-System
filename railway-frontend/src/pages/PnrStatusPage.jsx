@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Printer } from 'lucide-react';
 import { getPnrStatus } from '../api';
 import toast from 'react-hot-toast';
+import TicketPrintView from '../components/TicketPrintView';
 
 export default function PnrStatusPage() {
   const [pnr, setPnr] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [printBooking, setPrintBooking] = useState(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -42,11 +44,18 @@ export default function PnrStatusPage() {
       {result && (
         <div className="pnr-result">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg">PNR: <span className="text-gold">{result.pnr}</span></h3>
-            <span className={`badge badge-${result.status.toLowerCase()}`}>{result.status}</span>
+            <div>
+              <h3 className="font-bold text-lg">PNR: <span className="text-gold">{result.pnr}</span></h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={`badge badge-${result.status.toLowerCase()}`}>{result.status}</span>
+              <button className="btn btn-primary btn-sm" onClick={() => setPrintBooking(result)}>
+                <Printer size={14} /> Print Ticket
+              </button>
+            </div>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'var(--bg-secondary)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
             <div className="font-bold text-lg mb-1">{result.trainName} ({result.trainNumber})</div>
             <div className="text-secondary">{result.fromStation} → {result.toStation}</div>
 
@@ -74,7 +83,7 @@ export default function PnrStatusPage() {
             <h4 className="font-bold mb-3">Passenger Details</h4>
             <div className="form-grid form-grid-3">
               {result.passengers?.map((p, i) => {
-                const [name, age, gender] = p.split('|');
+                const [name, age, gender] = typeof p === 'string' ? p.split('|') : [p.name, p.age, p.gender];
                 return (
                   <div key={i} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                     <div className="text-xs text-muted font-bold mb-1">Passenger {i + 1}</div>
@@ -86,6 +95,10 @@ export default function PnrStatusPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {printBooking && (
+        <TicketPrintView booking={printBooking} onClose={() => setPrintBooking(null)} />
       )}
     </div>
   );

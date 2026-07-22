@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { getMyBookings, cancelBooking, getMyFoodOrders } from '../api';
-import { Train, CalendarX2, Utensils } from 'lucide-react';
+import { Train, CalendarX2, Utensils, Printer } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import TicketPrintView from '../components/TicketPrintView';
 
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [foodOrders, setFoodOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [printBooking, setPrintBooking] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -113,6 +115,9 @@ export default function MyBookingsPage() {
 
               {b.status === 'CONFIRMED' && (
                 <div className="flex gap-3 justify-end mt-4 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+                  <button className="btn btn-primary btn-sm" onClick={() => setPrintBooking(b)}>
+                    <Printer size={14} /> Print Ticket
+                  </button>
                   <Link to="/food" state={{ bookingId: b.id, trainId: b.trainNumber }} className="btn btn-secondary btn-sm">Order Food</Link>
                   <button className="btn btn-danger btn-sm" onClick={() => handleCancel(b.id)}>Cancel Ticket</button>
                 </div>
@@ -120,6 +125,10 @@ export default function MyBookingsPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {printBooking && (
+        <TicketPrintView booking={printBooking} onClose={() => setPrintBooking(null)} />
       )}
     </div>
   );
