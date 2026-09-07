@@ -36,6 +36,7 @@ public class SecurityConfig {
             .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/chatbot/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stations/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()

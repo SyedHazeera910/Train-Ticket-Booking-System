@@ -33,6 +33,7 @@ com\railway\identity\dto\UserDetailsResponse.class
 com\railway\chatbot\service\ChatbotService$2.class
 com\railway\payments\dto\WalletResponse.class
 com\railway\payments\dto\TopUpRequest.class
+com\railway\ticketing\dto\BookingRequest$BookingRequestBuilder.class
 com\railway\ticketing\entity\Station$StationBuilder.class
 com\railway\chatbot\entity\ChatSession.class
 com\railway\chatbot\service\ChatbotService$1.class

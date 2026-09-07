@@ -27,7 +27,7 @@ public class ChatController {
     public ResponseEntity<ChatResponse> sendMessage(
             @Valid @RequestBody ChatRequest request,
             Authentication auth) {
-        String userEmail = auth.getName();
+        String userEmail = (auth != null && auth.getName() != null) ? auth.getName() : "guest@railways.com";
         ChatResponse response = chatbotService.handleMessage(userEmail, request);
         return ResponseEntity.ok(response);
     }

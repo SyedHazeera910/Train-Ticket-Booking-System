@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { sendChatMessage } from '../api';
 import './ChatbotWidget.css';
 
@@ -47,7 +48,8 @@ const UserIcon = () => (
 
 // ── Quick-action chips shown at the bottom of the panel ────────────────────
 const QUICK_CHIPS = [
-  { label: '🎫 PNR Status', text: 'Check my PNR status' },
+  { label: '🎫 Book Ticket', text: 'I want to book a ticket' },
+  { label: '🎟️ PNR Status', text: 'Check my PNR status' },
   { label: '🚂 Track Train', text: 'Where is my train right now?' },
   { label: '📋 My Bookings', text: 'Show my recent bookings' },
   { label: '💰 Wallet', text: 'What is my wallet balance?' },
@@ -55,24 +57,61 @@ const QUICK_CHIPS = [
   { label: '🆘 Complaint', text: 'I have a problem' },
 ];
 
-// ── Simple markdown-style bold renderer ─────────────────────────────────────
-function renderMarkdown(text) {
-  if (!text) return '';
-  // Replace **text** with <strong>text</strong>
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return part;
-  });
+// ── Simple markdown & link renderer ─────────────────────────────────────────
+function RenderFormattedText({ text, onNavigate }) {
+  if (!text) return null;
+
+  // Split lines
+  const lines = text.split('\n');
+  return (
+    <>
+      {lines.map((line, lIdx) => {
+        // Match **bold** and [Link Text](url)
+        const regex = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
+        const parts = line.split(regex);
+
+        return (
+          <React.Fragment key={lIdx}>
+            {parts.map((part, pIdx) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={pIdx}>{part.slice(2, -2)}</strong>;
+              }
+              const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+              if (linkMatch) {
+                const [, label, url] = linkMatch;
+                return (
+                  <a
+                    key={pIdx}
+                    href={url}
+                    onClick={(e) => {
+                      if (url.startsWith('/')) {
+                        e.preventDefault();
+                        onNavigate(url);
+                      }
+                    }}
+                    style={{ color: '#60a5fa', textDecoration: 'underline', fontWeight: 600 }}
+                  >
+                    {label}
+                  </a>
+                );
+              }
+              return part;
+            })}
+            {lIdx < lines.length - 1 && <br />}
+          </React.Fragment>
+        );
+      })}
+    </>
+  );
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
 export default function ChatbotWidget() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [sessionId] = useState(() => crypto.randomUUID());
   const [hasGreeted, setHasGreeted] = useState(false);
@@ -218,7 +257,7 @@ export default function ChatbotWidget() {
                   {msg.role === 'bot' ? <BotIcon /> : <UserIcon />}
                 </div>
                 <div className="chatbot-msg-bubble">
-                  {renderMarkdown(msg.text)}
+                  <RenderFormattedText text={msg.text} onNavigate={navigate} />
                 </div>
               </div>
             ))}
